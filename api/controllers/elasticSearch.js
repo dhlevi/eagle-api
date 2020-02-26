@@ -3,6 +3,7 @@ const mongoosastic = require('mongoosastic');
 const defaultLog   = require('winston').loggers.get('default');
 const Actions      = require('../helpers/actions');
 const constants    = require('../helpers/constants');
+const projectDAO   = require('../dao/projectDAO');
 
 exports.options = async function (args, res, next)
 {
@@ -39,33 +40,29 @@ exports.syncElasticSearch = async function (args, res, next)
     {
         const documentModel = mongoose.model('Document');
         const projectModel = mongoose.model('Project');
-        const cpModel = mongoose.model('CommentPeriod');
 
-        defaultLog.debug(' Create document mapping...');
-        documentModel.createMapping(async (err, mapping) => {
-            console.log('mapping created');
-            console.log('Synchronizing Document model');
-            let docStream = await documentModel.synchronize(async function(error)
-            {
-                console.log(error);
-            });
+        console.log('Fetching projects...');
+        let projects = await projectDAO.getProjects(constants.SECURE_ROLES, 0, 10000, null, null, null);
 
-            console.log('Process complete!');
-            Actions.sendResponseV2(res, 200, { code: 200, message: 'Indexing complete'});
-        });
+        console.log('Creating project indexes...');
+        for(let idx in projects[0].searchResults)
+        {
+            let proj = projects[0].searchResults[idx];
+            (await projectModel.findById(proj._id)).save();
+        }
 
-        defaultLog.debug(' Create project mapping...');
-        projectModel.createMapping(async (err, mapping) => {
-            console.log('mapping created');
-            console.log('Synchronizing project model');
-            let projectStream = await cpModel.synchronize(async function(error)
-            {
-                console.log(error);
-            });
+        console.log('Fetching documents...');
+        let documents = await projectDAO.getProjects(constants.SECURE_ROLES, 0, 10000, null, null, null);
 
-            console.log('Process complete!');
-            Actions.sendResponseV2(res, 200, { code: 200, message: 'Indexing complete'});
-        });
+        console.log('Creating document indexes...');
+        for(let idx in projects[0].searchResults)
+        {
+            let proj = projects[0].searchResults[idx];
+            (await projectModel.findById(proj._id)).save();
+        }
+        
+        console.log('Done');
+        Actions.sendResponseV2(res, 200, { code: 200, message: 'Indexing Complete'});
     }
     catch (e)
     {
