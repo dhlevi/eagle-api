@@ -1,4 +1,5 @@
 var mongoose = require ('mongoose');
+const mongoosastic = require('mongoosastic');
 var _        = require ('lodash');
 
 var genSchema = function (name, definition) {
@@ -53,6 +54,15 @@ var genSchema = function (name, definition) {
     // create the schema
     //
     var schema = new mongoose.Schema (definition, options);
+
+    schema.plugin(mongoosastic, 
+    {
+        "host": "localhost",
+        "port": 9200
+    });
+
+    // create mongoosastic ref 
+
     //
     // perform post process stuff
     //
