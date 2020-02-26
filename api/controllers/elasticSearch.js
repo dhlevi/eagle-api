@@ -4,6 +4,7 @@ const defaultLog   = require('winston').loggers.get('default');
 const Actions      = require('../helpers/actions');
 const constants    = require('../helpers/constants');
 const projectDAO   = require('../dao/projectDAO');
+const documentDAO = require('../dao/documentDAO');
 
 exports.options = async function (args, res, next)
 {
@@ -52,13 +53,13 @@ exports.syncElasticSearch = async function (args, res, next)
         }
 
         console.log('Fetching documents...');
-        let documents = await projectDAO.getProjects(constants.SECURE_ROLES, 0, 10000, null, null, null);
+        let documents = await documentDAO.fetchDocuments(0, 100000, null, null, null, null, null, constants.SECURE_ROLES);
 
         console.log('Creating document indexes...');
-        for(let idx in projects[0].searchResults)
+        for(let idx in documents[0].searchResults)
         {
-            let proj = projects[0].searchResults[idx];
-            (await projectModel.findById(proj._id)).save();
+            let doc = documents[0].searchResults[idx];
+            (await documentModel.findById(doc._id)).save();
         }
         
         console.log('Done');
