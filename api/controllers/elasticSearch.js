@@ -20,9 +20,10 @@ exports.search = async function (args, res, next)
 {
     const documentModel = mongoose.model('Document');
 
+    let query = args.swagger.params.query && args.swagger.params.query.value ? args.swagger.params.query.value : 'project:58850ff6aaecd9001b808f88'
     documentModel.search({
         query_string: {
-            query: 'datePosted:*'
+            query: query
         }
       }, function(err, results) {
           if(err) {
@@ -49,17 +50,23 @@ exports.syncElasticSearch = async function (args, res, next)
         for(let idx in projects[0].searchResults)
         {
             let proj = projects[0].searchResults[idx];
-            (await projectModel.findById(proj._id)).save();
+            (await projectModel.findById(proj._id)).save().catch(err => { console.log(proj._id + ' failed to index. The project is invalid.') });
         }
 
         console.log('Fetching documents...');
-        let documents = await documentDAO.fetchDocuments(0, 100000, null, null, null, null, null, constants.SECURE_ROLES);
+        let pageSize = 1000;
+        let pageCount = 0;
 
-        console.log('Creating document indexes...');
-        for(let idx in documents[0].searchResults)
-        {
-            let doc = documents[0].searchResults[idx];
-            (await documentModel.findById(doc._id)).save();
+        while(pageCount <= 60) {
+            let documents = await documentDAO.fetchDocuments(pageCount, pageSize, null, null, null, null, null, constants.SECURE_ROLES);
+            console.log('Creating document indexes...');
+            for(let idx in documents[0].searchResults)
+            {
+                let doc = documents[0].searchResults[idx];
+                (await documentModel.findById(doc._id)).save().catch(err => { console.log(doc._id + ' failed to index. The document is invalid.') });
+            }
+
+            pageCount++;
         }
         
         console.log('Done');

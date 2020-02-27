@@ -8053,58 +8053,6 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
-
-
-
-
-
-
-  /Elasticsearch:
-    x-swagger-router-controller: elasticSearch
-    options:
-      tags:
-        - test
-      summary: "test"
-      operationId: options
-      description: "Options on Project GET Route"
-      responses:
-        "200":
-          description: "Success"
-        "403":
-          description: "Access Denied"
-    head:
-      tags:
-        - project
-      summary: "Retrieve META associated with an project."
-      operationId: head
-      description: "Get META from the request, without returning the payload in question."
-      responses:
-        "200":
-          description: "Success"
-        "403":
-          description: "Access Denied"
-    post:
-      tags:
-        - Elasticsearch
-      summary: "Sync elastic search"
-      operationId: syncElasticSearch
-      description: "Sync mognodb and elastic search (this is a test)"
-      responses:
-        "200":
-          description: "Success"
-        "403":
-          description: "Access Denied"
-    get:
-      tags:
-        - Elasticsearch
-      summary: "Sync elastic search"
-      operationId: search
-      description: "Sync mognodb and elastic search (this is a test)"
-      responses:
-        "200":
-          description: "Success"
-        "403":
-          description: "Access Denied"
 ### Documents
   /v2/documents:
     x-swagger-router-controller: documentsV2
@@ -8956,3 +8904,62 @@ paths:
           description: "Access Denied"
           schema:
             $ref: "#/definitions/Error"
+
+            
+
+
+
+
+
+  /Elasticsearch:
+    x-swagger-router-controller: elasticSearch
+    options:
+      tags:
+        - test
+      summary: "test"
+      operationId: options
+      description: "Options on Project GET Route"
+      responses:
+        "200":
+          description: "Success"
+        "403":
+          description: "Access Denied"
+    head:
+      tags:
+        - project
+      summary: "Retrieve META associated with an project."
+      operationId: head
+      description: "Get META from the request, without returning the payload in question."
+      responses:
+        "200":
+          description: "Success"
+        "403":
+          description: "Access Denied"
+    post:
+      tags:
+        - Elasticsearch
+      summary: "Sync elastic search"
+      operationId: syncElasticSearch
+      description: "Sync mognodb and elastic search (this is a test)"
+      responses:
+        "200":
+          description: "Success"
+        "403":
+          description: "Access Denied"
+    get:
+      tags:
+        - Elasticsearch
+      summary: "Sync elastic search"
+      operationId: search
+      description: "Sync mognodb and elastic search (this is a test)"
+      parameters:
+        - in: query
+          name: query
+          description: "query string"
+          type: string
+          required: false
+      responses:
+        "200":
+          description: "Success"
+        "403":
+          description: "Access Denied"
