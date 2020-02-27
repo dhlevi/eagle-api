@@ -4,7 +4,7 @@ const defaultLog   = require('winston').loggers.get('default');
 const Actions      = require('../helpers/actions');
 const constants    = require('../helpers/constants');
 const projectDAO   = require('../dao/projectDAO');
-const documentDAO = require('../dao/documentDAO');
+const documentDAO  = require('../dao/documentDAO');
 
 exports.options = async function (args, res, next)
 {
